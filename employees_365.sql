@@ -6,7 +6,7 @@ CREATE TABLE departments_dup (
 
 SELECT *
 FROM departments;
-
+-- Insert information into the employee_table 
 INSERT INTO departments_dup
 VALUES ('d010', null);
 
@@ -78,18 +78,20 @@ VALUES (999904, '2017-01-01'),
         (999907, '2017-01-01');
         
 SELECT *
-FROM dept_manager_dup; 
+FROM dept_manager_dup;
 
+-- delete information 
 DELETE FROM dept_manager_dup
 WHERE 
 	dept_no = 'd001'; 
-    
+
+-- commit a join and query with the last_name of the employee called  Markovitch 
 SELECT e.emp_no, e.first_name, e.last_name, d.dept_no, d.from_date AS hire_date
 FROM employees e
 INNER JOIN dept_emp d
 	ON e.emp_no = d.emp_no; 
 
-
+-- commit a left join between department table and emloyees table 
 SELECT d.emp_no, e.first_name, e.last_name, d.dept_no, d.from_date
 FROM employees e
 LEFT JOIN dept_manager d
@@ -103,8 +105,7 @@ FROM dept_manager d,
 WHERE d.emp_no = e.emp_no; 
 
 
-SELECT @@global.sql_mode;
-
+-- commit a join and query with first_name and last_name of the employee called Margareta Markovitch 
 SELECT e.first_name, e.last_name, t.title, t.from_date
 FROM employees e
 JOIN titles t
@@ -112,6 +113,7 @@ JOIN titles t
 WHERE e.first_name = 'Margareta' AND e.last_name = 'Markovitch'
 ORDER BY e.emp_no; 
 
+-- commit a cross join 
 SELECT *
 FROM departments d
 	CROSS JOIN 
@@ -126,6 +128,8 @@ FROM employees e
 WHERE e.emp_no < 10011
 ORDER BY e.emp_no, d.dept_name;
 
+
+-- Determine the list of employees who are managers 
 SELECT e.first_name, 
 		e.last_name,
 		e.hire_date,
@@ -170,7 +174,7 @@ FROM
 		dept_manager dm) as a 
 ORDER BY -a.emp_no DESC; 
 
-
+-- Determine how many employees were hired from 1991 to 1995 
 SELECT *
 FROM dept_manager
 WHERE emp_no IN (
@@ -179,6 +183,7 @@ WHERE emp_no IN (
     WHERE 
 		hire_date BETWEEN '1991-01-01'AND '1995-01-01'); 
 
+-- determine the list of employees whose title if assistant engineer 
 SELECT *
 FROM employees e
 WHERE EXISTS (
@@ -187,6 +192,7 @@ WHERE EXISTS (
     WHERE t.emp_no = e.emp_no 
 		AND title = 'Assistant Engineer'); 
 
+-- link each employee to thier respective department manager (use nested queries) 
 DROP TABLE IF EXISTS emp_manager;
 CREATE TABLE emp_manager (
 	emp_no INT(11) NOT NULL,
@@ -274,22 +280,8 @@ FROM
    USE employees;
    SELECT *
     FROM emp_manager; 
-    
-    SELECT *
-    FROM dept_manager 
-    WHERE emp_no IN (SELECT
-			emp_no
-        FROM 
-			employees
-		WHERE 
-			hire_date BETWEEN '1990-01-01' AND '1995-01-01'); 
-            
-SELECT *
-FROM employees e
-WHERE EXISTS (SELECT  *
-	FROM titles t
-	WHERE t.emp_no = e.emp_no AND title = 'Assistant Engineer'); 
-    
+
+-- create a view query to determine manager average salary     
 CREATE OR REPLACE VIEW v_manager_avg_salary AS 
 	SELECT 
 		ROUND(AVG(salary), 2)
@@ -297,7 +289,8 @@ CREATE OR REPLACE VIEW v_manager_avg_salary AS
 		salaries s
         JOIN 
 	dept_manager m ON s.emp_no = m.emp_no; 
-    
+
+-- create a stored routine to determine employee last name, and employee number based on first name 
 DELIMITER $$
 CREATE PROCEDURE emp_info(IN p_first_name varchar(255), IN p_last_name varchar(255), OUT p_emp_no INTEGER)
 BEGIN 
@@ -317,7 +310,8 @@ CALL emp_info('Aruna', 'Journel', @v_emp_no);
 SELECT @v_emp_no;
 
 USE employees;
--- function 
+
+-- create a stored function query that returns the salary of the employee based on first name inquiry 
 
 DELIMITER $$
 CREATE FUNCTION emp_info (p_first_name varchar(255), p_last_name varchar(255)) RETURNS DECIMAL(10, 2)
@@ -353,6 +347,8 @@ DELIMITER ;
 
 SELECT emp_info('Aruna', 'Journel'); 
 
+
+-- create a trigger that allows one to retrieve the hire date of an employee 
 DELIMITER $$
 CREATE TRIGGER trig_hire_date
 BEFORE INSERT ON employees
@@ -401,7 +397,7 @@ SELECT *
 FROM salaries
 WHERE salary > 89000;
 
--- case statement 
+-- using a case statement determine who is a manager and who is an employee 
 USE employees;
 
 SELECT 
@@ -420,6 +416,7 @@ WHERE
 	e.emp_no > 109990
 LIMIT 100;
 
+-- determine who is elligible for a salary raise for employees whose salary difference is $ 30 000 
 SELECT 
 	dm.emp_no,
 	e.first_name,
@@ -439,20 +436,6 @@ GROUP BY s.emp_no
 ORDER BY s.emp_no DESC; 
 
 
-SELECT 
-	dm.emp_no,
-    e.first_name,
-    e.last_name,
-    MAX(s.salary) - MIN(s.salary) AS salary_difference,
-    IF(MAX(s.salary) - MIN(s.salary) > 30000, 'Salary was raised by more than $30,000', 'Salary was NOT raised by more than $30,000') AS Salary_increase
-FROM 
-		dept_manager dm
-        JOIN 
-        employees e ON e.emp_no = dm.emp_no
-        JOIN 
-        salaries s ON s.emp_no = dm.emp_no
-GROUP BY s.emp_no; 
-
 
 SELECT *
 FROM dept_emp; 
@@ -463,7 +446,7 @@ SELECT
     e.last_name,
     e.emp_no,
     CASE 
-    WHEN MAX(de.to_date) > SYSDATE() THEN 'Is still employeed'
+    WHEN MAX(de.to_date) > SYSDATE() THEN 'Is still employed'
     ELSE 'Not an employee anymore' 
     END AS current_employee
 FROM 
@@ -473,7 +456,7 @@ GROUP BY de.emp_no
 LIMIT 100; 
 
 
--- ROW_NUMBER()
+-- ROW_NUMBER() Window function 
 SELECT emp_no, dept_no,
 	ROW_NUMBER() OVER(ORDER BY emp_no) AS row_num
 FROM 
