@@ -10,14 +10,4 @@
 ├── README.md                       # Project overview and documentation
 
 Features
-Database Setup: The project includes scripts to create tables for managing employee-related data such as departments, department managers, employee information, salaries, and titles.
-
-Data Insertion: The provided SQL script (employees.sql) loads the original employee data into the database, ensuring accuracy and completeness.
-
-Advanced SQL Queries: The queries.sql script contains a variety of advanced SQL queries to analyze employee data, including joins, aggregations, subqueries, and conditional statements.
-
-Stored Procedures: The stored_procedures.sql script demonstrates the creation and usage of stored procedures to automate common tasks and improve efficiency.
-
-Triggers: The triggers.sql script showcases the implementation of triggers to enforce data integrity rules and perform actions in response to database events.
-
-Functions: The functions.sql script includes examples of user-defined functions to simplify complex calculations and queries.
+To clean and manage the data within the employees database, I created a duplicate of the departments table named departments_dup and inserted several department records, ensuring to handle null values appropriately. I then created and populated a duplicate table dept_manager_dup with data from the dept_manager table, including some manual insertions and deletions to simulate data management scenarios. Additionally, I performed various SQL operations such as joining tables to extract specific employee details, creating a view to calculate the average salary of managers, and defining stored procedures and functions to retrieve employee information based on input parameters. Moreover, I implemented a trigger to enforce data integrity on hire dates and created indexes to optimize query performance. I also utilized advanced SQL techniques like window functions (e.g., ROW_NUMBER(), RANK(), DENSE_RANK()) and conditional queries to analyze and categorize data efficiently. Lastly, I demonstrated the use of CASE statements to determine employee statuses and salary raise eligibility, showcasing comprehensive data management and analysis skills.
